@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Klicker Game</title>
+    <link rel="stylesheet" href="style/style.css">
+    <script src="script/functions.js" defer></script>
+    <script src="script/animations.js" defer></script>
+    <script>
+        function updateAutoClickerSymbols() {
+            const container = document.getElementById('autoClickerSymbols');
+            if (!container) return;
+
+            // Clear existing symbols
+            container.innerHTML = '';
+
+            // Add a symbol for each Auto Clicker
+            for (let i = 0; i < autoClickers; i++) {
+                const angle = (360 / autoClickers) * i; // Distribute symbols evenly
+                const symbol = document.createElement('img');
+                symbol.src = 'assets/HeitelCursorNormal.ico'; // Path to the cursor image
+                symbol.className = 'auto-clicker-symbol';
+
+                // Calculate position on the circular path
+                const radius = 90; // Distance from the center of the click object
+                const x = radius * Math.cos((angle * Math.PI) / 180); // X position
+                const y = radius * Math.sin((angle * Math.PI) / 180); // Y position
+
+                // Position the symbol relative to the container
+                symbol.style.position = 'absolute';
+                symbol.style.left = `${50 + x}px`; // Offset by 50% to center
+                symbol.style.top = `${50 + y}px`; // Offset by 50% to center
+                symbol.style.transform = `rotate(${angle + 90}deg)`; // Rotate to point toward the center
+
+                container.appendChild(symbol);
+            }
+        }
+    </script>
+</head>
+<body>
+    <div id="floatingTextContainer"></div> <!-- Global container for floating text -->
+    <header>
+        <div class="logo-container">
+            <img src="assets\logos\HeitelKlickerLogoLangWhite.png" alt="Heitel Klicker Logo" class="logo">
+        </div>
+        <nav class="menu" aria-label="Hauptmenü">
+            <a href="#">Home</a>
+            <a href="#">Statistiken</a>
+            <a href="#">Über</a>
+        </nav>
+        <button class="settings" aria-label="Einstellungen" onclick="toggleSettingsPopup()">⚙️</button>
+    </header>
+    <main>
+        <section class="left">
+            <div id="autoClickerSymbols" aria-hidden="true"></div> <!-- Container for Auto Clicker symbols -->
+            <button class="click-object" id="clickObject" aria-label="Klicken für Heitels">
+                <img src="assets/heiteliconhell.png" alt="Klick-Objekt">
+            </button>
+        </section>
+        <section class="heitel-bar" aria-live="polite">
+            <p class="heitels" id="heitelValueBar">
+            Click Value: 1   
+            </p>
+        </section>
+        <section class="right">
+            <h3>Shop</h3>
+            <p>Hier kommen später die Kaufoptionen.</p>
+            <div class="shop-item" id="item1" onclick="buyItem(1)" role="button" tabindex="0" aria-label="Auto Klicker kaufen">
+                <img src="assets/HeitelCursorNormal.ico" alt="Auto Klicker Icon" class="shop-item-icon">
+                <div class="shop-item-info">
+                    <div class="iteminfo-container">
+                    <h4>Auto Klicker</h4>
+                    <p class="itemcount"><span id="item1Count">0</span></p>
+                    </div>
+                    <p>Kosten: 10 Heitels</p>
+
+                </div>
+            </div>
+        </section>
+        <section class="right-small">
+            <h3>Extras</h3>
+            <p>Hier kommen später die Extra-Optionen.</p>
+        </section>
+    </main>
+    <div id="settingsPopup" class="settings-popup" aria-hidden="true">
+        <div class="settings-popup-content">
+            <h2>Einstellungen</h2>
+            <button class="close-popup" onclick="toggleSettingsPopup()">✖</button>
+            <div class="settings-tabs">
+                <button class="tab-button active" onclick="switchTab('generalTab')">Allgemein</button>
+                <button class="tab-button" onclick="switchTab('appearanceTab')">Aussehen</button>
+                <button class="tab-button" onclick="switchTab('audioTab')">Audio</button>
+            </div>
+            <div id="generalTab" class="tab-content active">
+                <label>
+                    <input type="checkbox" id="autoSaveToggle">
+                    Autospeichern aktivieren
+                </label>
+            </div>
+            <div id="appearanceTab" class="tab-content">
+                <label>
+                    <input type="checkbox" id="darkModeToggle">
+                    Dunkelmodus aktivieren
+                </label>
+            </div>
+            <div id="audioTab" class="tab-content">
+                <label>
+                    <input type="checkbox" id="soundToggle">
+                    Sound aktivieren
+                </label>
+            </div>
+        </div>
+    </div>
+    <!-- From Uiverse.io by xerith_8140 --> 
+<ul class="notification-container">
+    
+  </ul>
+  
+    <div id="devMenu" class="dev-menu">
+        <h4>Development Menu</h4>
+        <button onclick="resetGame()">Reset Game</button>
+        <button onclick="showError('Test Error: Something went wrong!')">Test Error</button>
+        <button onclick="showWarning('Test Warning: Be cautious!')">Test Warning</button>
+        <button onclick="showInfo('Test Info: Here is some information.')">Test Info</button>
+    </div>
+    <footer>
+        <p>© 2025 CreepTV Games. Alle Rechte vorbehalten.</p>
+        <p>Version 1.0.0</p>
+    </footer>
+</body>
+</html>
