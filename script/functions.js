@@ -52,12 +52,12 @@ function updateAutoClickerSymbols() {
         symbol.src = '../assets/HeitelCursorNormal_Clicker.ico';
         symbol.className = 'auto-clicker-symbol';
 
-        const radius = 75;
+        const radius = 90; // Angepasster Radius für das vergrößerte Click-Objekt
         const x = radius * Math.cos((angle * Math.PI) / 180);
         const y = radius * Math.sin((angle * Math.PI) / 180);
 
-        symbol.style.left = `${75 + x}px`;
-        symbol.style.top = `${75 + y}px`;
+        symbol.style.left = `${90 + x}px`; // Zentriert relativ zur neuen Größe
+        symbol.style.top = `${90 + y}px`; // Zentriert relativ zur neuen Größe
         symbol.style.transform = `rotate(${angle + 270}deg)`;
 
         container.appendChild(symbol);

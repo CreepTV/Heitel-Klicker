@@ -2,6 +2,9 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    user-drag: none; /* Verhindert das Ziehen von Objekten */
+    -webkit-user-drag: none; /* Für Webkit-Browser */
+    caret-color: transparent; /* Verhindert die Anzeige des Caret-Zeichen-Cursors */
 }
 
 body {
@@ -49,19 +52,58 @@ main {
 }
 
 .left {
-    width: 300px; /* Set the frame width */
-    background-color: #007BFF; /* Blue background */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px; /* Add padding inside the frame */
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* Add a shadow for the frame */
-    position: relative; /* Ensure the `.left` container is the reference for absolute positioning */
+  width: 400px; /* Set the frame width */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px; /* Add padding inside the frame */
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* Add a shadow for the frame */
+  position: relative; /* Ensure the `.left` container is the reference for absolute positioning */
+    --bg: linear-gradient(
+        45deg,
+        rgb(0, 0, 0) 25%,
+        transparent 25%,
+        transparent 75%,
+        rgb(0, 0, 0) 75%,
+        rgb(0, 0, 0)
+      ),
+      linear-gradient(
+        45deg,
+        rgb(0, 0, 0) 25%,
+        white 25%,
+        rgb(255, 255, 255) 75%,
+        rgb(0, 0, 0) 75%,
+        rgb(0, 0, 0)
+      );
+    --bgsize: 60px 60px;
+    --bgposition: 0 0, 30px 30px;
+    background-color: white;
+    background-image: var(--bg);
+    background-size: var(--bgsize);
+    background-position: var(--bgposition);
+    position: relative;
+    perspective: 1000px;
+    overflow: hidden;
+    box-shadow: inset 0px 0px 500px rgb(15, 15, 15);
+}
+
+.left::before {
+    content: "";
+    width: 100%;
+    height: 150%;
+    box-shadow: 0px -100px 500px black, inset 0px 100px 500px rgb(15, 15, 15);
+    position: absolute;
+    top: 55%;
+    background-image: var(--bg);
+    background-size: var(--bgsize);
+    background-position: var(--bgposition);
+    transform-origin: top;
+    transform: rotateX(80deg);
 }
 
 .left .click-object {
-    width: 150px;
-    height: 150px;
+    width: 180px; /* Vergrößert um 20% */
+    height: 180px; /* Vergrößert um 20% */
     background-color: transparent; /* Remove background color */
     border-radius: 50%;
     display: flex;
@@ -72,6 +114,10 @@ main {
     cursor: pointer;
     padding: 0; /* Remove padding */
     transition: transform 0.1s ease; /* Add a slight animation on click */
+    z-index: 10; /* Sicherstellen, dass das Click-Objekt immer im Vordergrund ist */
+    user-select: none; /* Verhindert das Markieren des Click-Objekts */
+    -webkit-user-select: none; /* Für Webkit-Browser */
+    -ms-user-select: none; /* Für Internet Explorer */
 }
 
 .left .click-object img {
@@ -257,19 +303,19 @@ footer {
 
 #autoClickerSymbols {
     position: absolute;
-    width: 145px; /* Match the size of the click object */
-    height: 145px;
-    top: 47%; /* Center the container vertically relative to the parent */
-    left: 46%; /* Center the container horizontally relative to the parent */
+    width: 190px; /* Vergrößert um 20%, passend zum Click-Objekt */
+    height: 190px; /* Vergrößert um 20%, passend zum Click-Objekt */
+    top: 48%; /* Zentriert relativ zum Click-Objekt */
+    left: 47.5%; /* Zentriert relativ zum Click-Objekt */
     transform: translate(-50%, -50%); /* Center the container exactly over the click object */
     pointer-events: none; /* Prevent interaction with the symbols */
-    z-index: 5; /* Ensure it is above the click object */
+    z-index: 15; /* Sicherstellen, dass die Auto-Clicker-Symbole über dem Click-Objekt sind */
 }
 
 .auto-clicker-symbol {
     position: absolute;
-    width: 25px; /* Size of the symbol */
-    height: 35px;
+    width: 30px; /* Vergrößert proportional */
+    height: 42px; /* Vergrößert proportional */
     transform-origin: center center; /* Ensure proper rotation */
     animation: none; /* Disable self-rotation */
 }
