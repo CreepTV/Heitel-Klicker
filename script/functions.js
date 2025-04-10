@@ -151,6 +151,26 @@ function toggleSettingsPopup() {
     }
 }
 
+function toggleLoginPopup() {
+    const loginPopup = document.getElementById('loginPopup');
+    const registerPopup = document.getElementById('registerPopup');
+    if (loginPopup) {
+        const isHidden = loginPopup.style.display === 'none' || !loginPopup.style.display;
+        loginPopup.style.display = isHidden ? 'block' : 'none';
+        if (isHidden && registerPopup) registerPopup.style.display = 'none'; // Close register popup
+    }
+}
+
+function toggleRegisterPopup() {
+    const registerPopup = document.getElementById('registerPopup');
+    const loginPopup = document.getElementById('loginPopup');
+    if (registerPopup) {
+        const isHidden = registerPopup.style.display === 'none' || !registerPopup.style.display;
+        registerPopup.style.display = isHidden ? 'block' : 'none';
+        if (isHidden && loginPopup) loginPopup.style.display = 'none'; // Close login popup
+    }
+}
+
 function switchTab(tabId) {
     const tabs = document.querySelectorAll('.tab-content');
     const buttons = document.querySelectorAll('.tab-button');
@@ -219,6 +239,97 @@ function showError(message) {
 
 function showInfo(message) {
     showNotification('info', message);
+}
+
+function closePopup(popupId) {
+    const popup = document.getElementById(popupId);
+    if (popup) {
+        popup.style.display = 'none';
+    }
+}
+
+function toggleProfilePopup() {
+    const profilePopup = document.getElementById('profilePopup');
+    if (profilePopup) {
+        const isHidden = profilePopup.style.display === 'none' || !profilePopup.style.display;
+        profilePopup.style.display = isHidden ? 'block' : 'none';
+    }
+}
+
+function showProfile() {
+    const profileManagementPopup = document.getElementById('profileManagementPopup');
+    if (profileManagementPopup) {
+        profileManagementPopup.style.display = 'block';
+    }
+}
+
+let cropper;
+
+function updateProfilePicturePreview(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const cropContainer = document.getElementById('cropContainer');
+            if (cropContainer) {
+                cropContainer.innerHTML = `<img id="cropImage" src="${e.target.result}" alt="Profilbild Vorschau">`;
+                const cropImage = document.getElementById('cropImage');
+                cropper = new Cropper(cropImage, {
+                    aspectRatio: 1,
+                    viewMode: 1,
+                });
+                showPopup('cropModal');
+            }
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+function applyCrop() {
+    if (cropper) {
+        const canvas = cropper.getCroppedCanvas({
+            width: 120,
+            height: 120,
+        });
+        const croppedImage = canvas.toDataURL('image/png');
+        const preview = document.getElementById('profilePicturePreview');
+        if (preview) {
+            preview.src = croppedImage;
+        }
+        cropper.destroy();
+        cropper = null;
+        closePopup('cropModal');
+    }
+}
+
+function triggerProfilePictureInput() {
+    const input = document.getElementById('profilePictureInput');
+    if (input) {
+        input.click();
+    }
+}
+
+function removeProfilePicture() {
+    const preview = document.getElementById('profilePicturePreview');
+    if (preview) {
+        preview.src = 'assets/profile-placeholder.png'; // Reset to placeholder
+    }
+}
+
+function savePublicProfile() {
+    const profileName = document.getElementById('profileNameInput').value;
+    const profilePicture = document.getElementById('profilePicturePreview').src;
+    console.log('Profil gespeichert:', { profileName, profilePicture });
+    alert('Dein öffentliches Profil wurde gespeichert!');
+    closePopup('profileManagementPopup');
+}
+
+function saveAccountSettings() {
+    const email = document.getElementById('emailInput').value;
+    const password = document.getElementById('passwordInput').value;
+    console.log('Kontoeinstellungen gespeichert:', { email, password });
+    alert('Deine Kontoeinstellungen wurden gespeichert!');
+    closePopup('profileManagementPopup');
 }
 
 document.addEventListener('DOMContentLoaded', () => {
