@@ -1,11 +1,12 @@
 // Verbesserungen: Modularisierung, bessere Kommentare, Fehlerbehandlung
 let clickValue = 0; // Aktueller Heitel-Wert
 let autoClickers = 0; // Anzahl der Auto Klicker
+let autoClickerPrice = 10; // Initial price for auto-clickers
 
 function updateHeitelValueBar() {
-    const heitelValueBar = document.getElementById('heitelValueBar');
-    if (heitelValueBar) {
-        heitelValueBar.innerText = `🍪 ${clickValue}`;
+    const heitelValueElement = document.getElementById('heitelValue');
+    if (heitelValueElement) {
+        heitelValueElement.innerText = clickValue;
     }
 }
 
@@ -46,8 +47,9 @@ function updateAutoClickerSymbols() {
 
     container.innerHTML = '';
 
-    for (let i = 0; i < autoClickers; i++) {
-        const angle = (360 / autoClickers) * i;
+    const maxSymbols = 10; // Maximum number of symbols displayed
+    for (let i = 0; i < Math.min(autoClickers, maxSymbols); i++) {
+        const angle = (360 / maxSymbols) * i;
         const symbol = document.createElement('img');
         symbol.src = '../assets/HeitelCursorNormal_Clicker.ico';
         symbol.className = 'auto-clicker-symbol';
@@ -62,15 +64,48 @@ function updateAutoClickerSymbols() {
 
         container.appendChild(symbol);
     }
+
+    // Replace symbols cyclically for autoClickers > maxSymbols
+    if (autoClickers > maxSymbols) {
+        const extraSymbols = autoClickers - maxSymbols;
+        for (let i = 0; i < extraSymbols; i++) {
+            const index = i % maxSymbols; // Replace symbols cyclically
+            const symbol = container.children[index];
+            if (symbol) {
+                symbol.src = '../assets/HeitelCursorNormal_Clicker.png';
+            }
+        }
+    }
+}
+
+function updateAutoClickerPriceDisplay() {
+    const priceElement = document.getElementById('kosten');
+    if (priceElement) {
+        priceElement.innerText = `${autoClickerPrice} Heitels`;
+    }
+}
+
+function updateShopTooltip(itemId, incomePerItem, purchasedCount) {
+    if (itemId === 1) {
+        const incomePerItemElement = document.getElementById('item1IncomePerItem');
+        const totalIncomeElement = document.getElementById('item1TotalIncome');
+        const purchasedElement = document.getElementById('item1Purchased');
+        if (incomePerItemElement) incomePerItemElement.innerText = incomePerItem;
+        if (totalIncomeElement) totalIncomeElement.innerText = incomePerItem * purchasedCount;
+        if (purchasedElement) purchasedElement.innerText = purchasedCount;
+    }
 }
 
 function buyItem(itemId) {
-    if (itemId === 1 && clickValue >= 10) {
-        clickValue -= 10;
+    if (itemId === 1 && clickValue >= autoClickerPrice) {
+        clickValue -= autoClickerPrice;
         autoClickers += 1;
+        autoClickerPrice = Math.ceil(autoClickerPrice * 1.20); // Increase price by 20%
         updateHeitelValueBar();
         updateAutoClickerSymbols();
         updateItemCount('item1Count', autoClickers);
+        updateAutoClickerPriceDisplay();
+        updateShopTooltip(1, 1, autoClickers); // Update tooltip with income per item and total income
     } else if (itemId === 1) {
         alert('Nicht genug Heitels!');
     }
@@ -105,6 +140,7 @@ function resetGame() {
     autoClickers = 0;
     updateHeitelValueBar();
     updateItemCount('item1Count', autoClickers);
+    location.reload(); // Reload the page
 }
 
 function toggleSettingsPopup() {
@@ -188,6 +224,8 @@ function showInfo(message) {
 document.addEventListener('DOMContentLoaded', () => {
     loadGame();
     updateAutoClickerSymbols();
+    updateAutoClickerPriceDisplay();
+    updateShopTooltip(1, 1, autoClickers); // Initialize tooltip on page load
 
     const clickObject = document.getElementById('clickObject');
     if (clickObject) {

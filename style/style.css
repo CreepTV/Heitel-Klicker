@@ -47,8 +47,26 @@ header .settings {
 main {
     display: flex;
     flex: 1;
-    background-color: #f4f4f4;
     position: relative;
+}
+
+.main-pattern {
+    width: 100%;
+    height: 100%;
+    background: #f1f1f1;
+    background-image: linear-gradient(
+        90deg,
+        transparent 50px,
+        #ffb4b8 50px,
+        #ffb4b8 52px,
+        transparent 52px
+      ),
+      linear-gradient(#e1e1e1 0.1em, transparent 0.1em);
+    background-size: 100% 30px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1; /* Ensure it stays behind other elements */
 }
 
 .left {
@@ -174,6 +192,17 @@ main {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Added shadow */
 }
 
+.heitels {
+    display: flex;
+    align-items: center;
+    gap: 5px; /* Space between the icon and the value */
+}
+
+.heitel-icon {
+    width: 20px; /* Adjust size as needed */
+    height: 20px;
+}
+
 footer {
     background-color: #333;
     color: white;
@@ -182,9 +211,11 @@ footer {
 }
 
 .shop-item {
-    background-color: #f9f9f9;
-    border: 1px solid #ccc;
+    background-color: #2c2c2c;
+    color: #ffffff;
+    border: 1px solid #747474;
     padding: 5px;
+    padding-left: 6px;
     margin-top: 10px;
     border-radius: 5px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -195,7 +226,55 @@ footer {
     display: flex;
     align-items: center; /* Align icon and text vertically */
     gap: 10px; /* Add spacing between the icon and text */
+    position: relative; /* Required for tooltip positioning */
 }
+
+.tooltip {
+  visibility: hidden;
+  background-color: rgba(51, 51, 51, 0.651); /* 50% transparent background */
+  color: #fff;
+  text-align: left; /* Align text for better readability */
+  line-height: 1.5; /* Add spacing between lines */
+  font-size: 14px; /* Adjust font size for better readability */
+  padding: 6px;
+  text-wrap: normal;
+  width: 300px; /* Set a fixed width for the tooltip */
+  border-radius: 5px;
+  position: absolute;
+  top: 0%;
+  right: 20%;
+  transform: translateX(-50%);
+  z-index: 10;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 5px; /* Add spacing between rows */
+}
+
+.tooltip .itemDescription {
+  font-size: 13px; /* Adjust font size for better readability */
+  color: #fff; /* White text color for better contrast */
+  text-align: left; /* Align text for better readability */
+  line-height: 1.2; /* Reduce line spacing */
+}
+
+.tooltip-row {
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Space between icon and text */
+}
+
+.tooltip-icon {
+    width: 21px; /* Small icon size */
+    height: 21px;
+}
+
+.shop-item:hover .tooltip {
+    visibility: visible;
+    opacity: 1;
+}
+
 .shop-item-info{
     flex-direction: row;
 }
@@ -209,20 +288,22 @@ footer {
 }
 
 .shop-item:hover {
-    transform: scale(1.05); /* Deutlicheres Feedback */
+    transform: scale(1.005);
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
 }
 
 .shop-item-icon {
     width: 40px; /* Set the icon size */
+    background-color: #ddd;
     height: 40px;
     padding: 5px;
     border-radius: 5px; /* Optional: Add rounded corners */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Add a shadow for the icon */
+    box-shadow: 0 2px 5px rgba(255, 167, 100, 0.1); /* Add a shadow for the icon */
 }
 
 .itemcount{
-    background-color: beige;
+    background-color: rgb(212, 185, 65);
+    color: black;
     padding-bottom: 0px;
     padding-top: 2px;
     padding-left: 4px;

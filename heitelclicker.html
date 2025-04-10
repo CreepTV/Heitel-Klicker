@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="style/style.css">
     <script src="script/functions.js" defer></script>
     <script src="script/animations.js" defer></script>
+    <script type="module" src="script/firebase.js" defer></script>
     <script>
         function updateAutoClickerSymbols() {
             const container = document.getElementById('autoClickerSymbols');
@@ -39,7 +40,6 @@
     </script>
 </head>
 <body>
-    <div id="floatingTextContainer"></div> <!-- Global container for floating text -->
     <header>
         <div class="logo-container">
             <img src="assets\logos\HeitelKlickerLogoLangWhite.png" alt="Heitel Klicker Logo" class="logo">
@@ -52,6 +52,8 @@
         <button class="settings" aria-label="Einstellungen" onclick="toggleSettingsPopup()">⚙️</button>
     </header>
     <main>
+        <div class="main-pattern"></div> <!-- Background pattern -->
+        <div id="floatingTextContainer"></div> <!-- Global container for floating text -->
         <section class="left">
             <div id="autoClickerSymbols" aria-hidden="true"></div> <!-- Container for Auto Clicker symbols -->
             <button class="click-object" id="clickObject" aria-label="Klicken für Heitels">
@@ -60,7 +62,8 @@
         </section>
         <section class="heitel-bar" aria-live="polite">
             <p class="heitels" id="heitelValueBar">
-            Click Value: 1   
+                <img src="assets\icons\HeitelKopf_trans.png" alt="Heitel Icon" class="heitel-icon">
+                <span id="heitelValue">0</span>
             </p>
         </section>
         <section class="right">
@@ -73,9 +76,23 @@
                     <h4>Auto Klicker</h4>
                     <p class="itemcount"><span id="item1Count">0</span></p>
                     </div>
-                    <p>Kosten: 10 Heitels</p>
-
+                    <p id="kosten">10 Heitels</p>
                 </div>
+                <span class="tooltip">
+                    <span class="itemDescription" id="item1Description">Ein automatischer Klicker, der Heitels für dich sammelt.</span>
+                    <div class="tooltip-row">
+                        <img src="assets\icons\produktion_icon_alone.png" alt="Produktion pro Item" style="scale: 80%;" class="tooltip-icon">
+                        <span id="item1IncomePerItem">1</span> Heitels/sek
+                    </div>
+                    <div class="tooltip-row">
+                        <img src="assets\icons\produktion_icon_transparent.png" alt="Gesamtproduktion" class="tooltip-icon">
+                        <span id="item1TotalIncome">0</span> Heitels/sek
+                    </div>
+                    <div class="tooltip-row">
+                        <img src="assets\icons\multipleAutoclicker.png" alt="Gekauft" class="tooltip-icon">
+                        <span id="item1Purchased">0</span> Stück
+                    </div>
+                </span>
             </div>
         </section>
         <section class="right-small">
