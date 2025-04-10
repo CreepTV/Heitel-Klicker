@@ -1,89 +1,149 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Welcome to Firebase Hosting</title>
-
-    <!-- update the version number as needed -->
-    <script defer src="/__/firebase/11.6.0/firebase-app-compat.js"></script>
-    <!-- include only the Firebase features as you need -->
-    <script defer src="/__/firebase/11.6.0/firebase-auth-compat.js"></script>
-    <script defer src="/__/firebase/11.6.0/firebase-database-compat.js"></script>
-    <script defer src="/__/firebase/11.6.0/firebase-firestore-compat.js"></script>
-    <script defer src="/__/firebase/11.6.0/firebase-functions-compat.js"></script>
-    <script defer src="/__/firebase/11.6.0/firebase-messaging-compat.js"></script>
-    <script defer src="/__/firebase/11.6.0/firebase-storage-compat.js"></script>
-    <script defer src="/__/firebase/11.6.0/firebase-analytics-compat.js"></script>
-    <script defer src="/__/firebase/11.6.0/firebase-remote-config-compat.js"></script>
-    <script defer src="/__/firebase/11.6.0/firebase-performance-compat.js"></script>
-    <!-- 
-      initialize the SDK after all desired features are loaded, set useEmulator to false
-      to avoid connecting the SDK to running emulators.
-    -->
-    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
-
-    <style media="screen">
-      body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
-      #message { background: white; max-width: 360px; margin: 100px auto 16px; padding: 32px 24px; border-radius: 3px; }
-      #message h2 { color: #ffa100; font-weight: bold; font-size: 16px; margin: 0 0 8px; }
-      #message h1 { font-size: 22px; font-weight: 300; color: rgba(0,0,0,0.6); margin: 0 0 16px;}
-      #message p { line-height: 140%; margin: 16px 0 24px; font-size: 14px; }
-      #message a { display: block; text-align: center; background: #039be5; text-transform: uppercase; text-decoration: none; color: white; padding: 16px; border-radius: 4px; }
-      #message, #message a { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); }
-      #load { color: rgba(0,0,0,0.4); text-align: center; font-size: 13px; }
-      @media (max-width: 600px) {
-        body, #message { margin-top: 0; background: white; box-shadow: none; }
-        body { border-top: 16px solid #ffa100; }
-      }
-    </style>
-  </head>
-  <body>
-    <div id="message">
-      <h2>Welcome</h2>
-      <h1>Firebase Hosting Setup Complete</h1>
-      <p>You're seeing this because you've successfully setup Firebase Hosting. Now it's time to go build something extraordinary!</p>
-      <a target="_blank" href="https://firebase.google.com/docs/hosting/">Open Hosting Documentation</a>
-    </div>
-    <p id="load">Firebase SDK Loading&hellip;</p>
-
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Klicker Game</title>
+    <link rel="stylesheet" href="style/style.css">
+    <script src="script/functions.js" defer></script>
+    <script src="script/animations.js" defer></script>
+    <script type="module" src="script/firebase.js" defer></script>
     <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        const loadEl = document.querySelector('#load');
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
-        // // The Firebase SDK is initialized and available here!
-        //
-        // firebase.auth().onAuthStateChanged(user => { });
-        // firebase.database().ref('/path/to/ref').on('value', snapshot => { });
-        // firebase.firestore().doc('/foo/bar').get().then(() => { });
-        // firebase.functions().httpsCallable('yourFunction')().then(() => { });
-        // firebase.messaging().requestPermission().then(() => { });
-        // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
-        // firebase.analytics(); // call to activate
-        // firebase.analytics().logEvent('tutorial_completed');
-        // firebase.performance(); // call to activate
-        //
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
+        function updateAutoClickerSymbols() {
+            const container = document.getElementById('autoClickerSymbols');
+            if (!container) return;
 
-        try {
-          let app = firebase.app();
-          let features = [
-            'auth', 
-            'database', 
-            'firestore',
-            'functions',
-            'messaging', 
-            'storage', 
-            'analytics', 
-            'remoteConfig',
-            'performance',
-          ].filter(feature => typeof app[feature] === 'function');
-          loadEl.textContent = `Firebase SDK loaded with ${features.join(', ')}`;
-        } catch (e) {
-          console.error(e);
-          loadEl.textContent = 'Error loading the Firebase SDK, check the console.';
+            // Clear existing symbols
+            container.innerHTML = '';
+
+            // Add a symbol for each Auto Clicker
+            for (let i = 0; i < autoClickers; i++) {
+                const angle = (360 / autoClickers) * i; // Distribute symbols evenly
+                const symbol = document.createElement('img');
+                symbol.src = 'assets/HeitelCursorNormal.ico'; // Path to the cursor image
+                symbol.className = 'auto-clicker-symbol';
+
+                // Calculate position on the circular path
+                const radius = 90; // Distance from the center of the click object
+                const x = radius * Math.cos((angle * Math.PI) / 180); // X position
+                const y = radius * Math.sin((angle * Math.PI) / 180); // Y position
+
+                // Position the symbol relative to the container
+                symbol.style.position = 'absolute';
+                symbol.style.left = `${50 + x}px`; // Offset by 50% to center
+                symbol.style.top = `${50 + y}px`; // Offset by 50% to center
+                symbol.style.transform = `rotate(${angle + 90}deg)`; // Rotate to point toward the center
+
+                container.appendChild(symbol);
+            }
         }
-      });
     </script>
-  </body>
+</head>
+<body>
+    <header>
+        <div class="logo-container">
+            <img src="assets\logos\HeitelKlickerLogoLangWhite.png" alt="Heitel Klicker Logo" class="logo">
+        </div>
+        <nav class="menu" aria-label="Hauptmenü">
+            <a href="#">Home</a>
+            <a href="#">Statistiken</a>
+            <a href="#">Über</a>
+        </nav>
+        <button class="settings" aria-label="Einstellungen" onclick="toggleSettingsPopup()">⚙️</button>
+    </header>
+    <main>
+        <div class="main-pattern"></div> <!-- Background pattern -->
+        <div id="floatingTextContainer"></div> <!-- Global container for floating text -->
+        <section class="left">
+            <div id="autoClickerSymbols" aria-hidden="true"></div> <!-- Container for Auto Clicker symbols -->
+            <button class="click-object" id="clickObject" aria-label="Klicken für Heitels">
+                <img src="assets/heiteliconhell.png" alt="Klick-Objekt">
+            </button>
+        </section>
+        <section class="heitel-bar" aria-live="polite">
+            <p class="heitels" id="heitelValueBar">
+                <img src="assets\icons\HeitelKopf_trans.png" alt="Heitel Icon" class="heitel-icon">
+                <span id="heitelValue">0</span>
+            </p>
+        </section>
+        <section class="right">
+            <h3>Shop</h3>
+            <p>Hier kommen später die Kaufoptionen.</p>
+            <div class="shop-item" id="item1" onclick="buyItem(1)" role="button" tabindex="0" aria-label="Auto Klicker kaufen">
+                <img src="assets/HeitelCursorNormal.ico" alt="Auto Klicker Icon" class="shop-item-icon">
+                <div class="shop-item-info">
+                    <div class="iteminfo-container">
+                    <h4>Auto Klicker</h4>
+                    <p class="itemcount"><span id="item1Count">0</span></p>
+                    </div>
+                    <p id="kosten">10 Heitels</p>
+                </div>
+                <span class="tooltip">
+                    <span class="itemDescription" id="item1Description">Ein automatischer Klicker, der Heitels für dich sammelt.</span>
+                    <div class="tooltip-row">
+                        <img src="assets\icons\produktion_icon_alone.png" alt="Produktion pro Item" style="scale: 80%;" class="tooltip-icon">
+                        <span id="item1IncomePerItem">1</span> Heitels/sek
+                    </div>
+                    <div class="tooltip-row">
+                        <img src="assets\icons\produktion_icon_transparent.png" alt="Gesamtproduktion" class="tooltip-icon">
+                        <span id="item1TotalIncome">0</span> Heitels/sek
+                    </div>
+                    <div class="tooltip-row">
+                        <img src="assets\icons\multipleAutoclicker.png" alt="Gekauft" class="tooltip-icon">
+                        <span id="item1Purchased">0</span> Stück
+                    </div>
+                </span>
+            </div>
+        </section>
+        <section class="right-small">
+            <h3>Extras</h3>
+            <p>Hier kommen später die Extra-Optionen.</p>
+        </section>
+    </main>
+    <div id="settingsPopup" class="settings-popup" aria-hidden="true">
+        <div class="settings-popup-content">
+            <h2>Einstellungen</h2>
+            <button class="close-popup" onclick="toggleSettingsPopup()">✖</button>
+            <div class="settings-tabs">
+                <button class="tab-button active" onclick="switchTab('generalTab')">Allgemein</button>
+                <button class="tab-button" onclick="switchTab('appearanceTab')">Aussehen</button>
+                <button class="tab-button" onclick="switchTab('audioTab')">Audio</button>
+            </div>
+            <div id="generalTab" class="tab-content active">
+                <label>
+                    <input type="checkbox" id="autoSaveToggle">
+                    Autospeichern aktivieren
+                </label>
+            </div>
+            <div id="appearanceTab" class="tab-content">
+                <label>
+                    <input type="checkbox" id="darkModeToggle">
+                    Dunkelmodus aktivieren
+                </label>
+            </div>
+            <div id="audioTab" class="tab-content">
+                <label>
+                    <input type="checkbox" id="soundToggle">
+                    Sound aktivieren
+                </label>
+            </div>
+        </div>
+    </div>
+    <!-- From Uiverse.io by xerith_8140 --> 
+<ul class="notification-container">
+    
+  </ul>
+  
+    <div id="devMenu" class="dev-menu">
+        <h4>Development Menu</h4>
+        <button onclick="resetGame()">Reset Game</button>
+        <button onclick="showError('Test Error: Something went wrong!')">Test Error</button>
+        <button onclick="showWarning('Test Warning: Be cautious!')">Test Warning</button>
+        <button onclick="showInfo('Test Info: Here is some information.')">Test Info</button>
+    </div>
+    <footer>
+        <p>© 2025 CreepTV Games. Alle Rechte vorbehalten.</p>
+        <p>Version 1.0.0</p>
+    </footer>
+</body>
 </html>
