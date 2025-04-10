@@ -157,7 +157,11 @@ function toggleLoginPopup() {
     if (loginPopup) {
         const isHidden = loginPopup.style.display === 'none' || !loginPopup.style.display;
         loginPopup.style.display = isHidden ? 'block' : 'none';
-        if (isHidden && registerPopup) registerPopup.style.display = 'none'; // Close register popup
+        loginPopup.setAttribute('aria-hidden', !isHidden); // Dynamisch aria-hidden setzen
+        if (isHidden && registerPopup) {
+            registerPopup.style.display = 'none';
+            registerPopup.setAttribute('aria-hidden', 'true');
+        }
     }
 }
 
@@ -167,7 +171,11 @@ function toggleRegisterPopup() {
     if (registerPopup) {
         const isHidden = registerPopup.style.display === 'none' || !registerPopup.style.display;
         registerPopup.style.display = isHidden ? 'block' : 'none';
-        if (isHidden && loginPopup) loginPopup.style.display = 'none'; // Close login popup
+        registerPopup.setAttribute('aria-hidden', !isHidden); // Dynamisch aria-hidden setzen
+        if (isHidden && loginPopup) {
+            loginPopup.style.display = 'none';
+            loginPopup.setAttribute('aria-hidden', 'true');
+        }
     }
 }
 
