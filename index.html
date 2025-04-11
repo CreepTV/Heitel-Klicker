@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Klicker Game</title>
     <link rel="stylesheet" href="style/style.css">
+    <script src="./script/firebase-config.js" type="module"></script>
     <script src="./script/functions.js" defer></script>
     <script src="./script/animations.js" defer></script>
-    <script type="module" src="./script/firebase.js" defer></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
     <script>
@@ -88,7 +88,75 @@
         });
     </script>
     <script type="module">
-        import { registerUser, loginUser, logoutUser } from './script/firebase.js';
+        import { registerUser, loginUser, logoutUser } from './script/firebase-config.js';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Login-Formular
+            const loginForm = document.querySelector('#loginPopup .form');
+            if (loginForm) {
+                loginForm.addEventListener('submit', async (event) => {
+                    event.preventDefault();
+                    const email = loginForm.email.value.trim();
+                    const password = loginForm.password.value;
+
+                    if (!email || !password) {
+                        alert('Bitte fülle alle Felder aus.');
+                        return;
+                    }
+
+                    try {
+                        await loginUser(email, password);
+                        closePopup('loginPopup');
+                    } catch (error) {
+                        console.error("Login failed:", error);
+                    }
+                });
+            }
+
+            // Registrierungs-Formular
+            const registerForm = document.querySelector('#registerPopup .form');
+            if (registerForm) {
+                registerForm.addEventListener('submit', async (event) => {
+                    event.preventDefault();
+                    const email = registerForm.email.value.trim();
+                    const password = registerForm.password.value;
+                    const confirmPassword = registerForm.confirmPassword.value;
+
+                    if (!email || !password || !confirmPassword) {
+                        alert('Bitte fülle alle Felder aus.');
+                        return;
+                    }
+
+                    if (password !== confirmPassword) {
+                        alert('Passwörter stimmen nicht überein!');
+                        return;
+                    }
+
+                    try {
+                        await registerUser(email, password);
+                        alert('Erfolgreich registriert!');
+                        closePopup('registerPopup');
+                    } catch (error) {
+                        console.error("Registration failed:", error);
+                    }
+                });
+            }
+
+            // Abmelden-Button
+            const logoutButton = document.querySelector('#profilePopup button[onclick="logoutUser()"]');
+            if (logoutButton) {
+                logoutButton.addEventListener('click', async () => {
+                    try {
+                        await logoutUser();
+                    } catch (error) {
+                        console.error("Logout failed:", error);
+                    }
+                });
+            }
+        });
+    </script>
+    <script type="module">
+        import { registerUser, loginUser, logoutUser } from './script/firebase-config.js';
 
         document.addEventListener('DOMContentLoaded', () => {
             // Registrierungs-Formular
@@ -122,7 +190,7 @@
         });
     </script>
     <script type="module">
-        import { testFirebaseAPIs } from './script/firebase.js';
+        import { testFirebaseAPIs } from './script/firebase-config.js';
 
         document.addEventListener('DOMContentLoaded', () => {
             testFirebaseAPIs();
@@ -245,6 +313,8 @@
         <button onclick="showWarning('Test Warning: Be cautious!')">Test Warning</button>
         <button onclick="showInfo('Test Info: Here is some information.')">Test Info</button>
     </div>
+    
+    <!-- Login und Registrierung -->
     <div id="loginPopup" class="login-popup" aria-hidden="true">
         <form class="form" onsubmit="return false;">
             <button class="close-popup" type="button" onclick="closePopup('loginPopup')">✖</button>
