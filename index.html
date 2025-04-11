@@ -196,6 +196,81 @@
             testFirebaseAPIs();
         });
     </script>
+    <script type="module">
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
+        import { getUserProfile, updateUserProfile } from './script/firebase-config.js';
+
+        const auth = getAuth();
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const profilePicturePreview = document.getElementById("profilePicturePreview");
+            const profilePictureInput = document.getElementById("profilePictureInput");
+            const profileNameInput = document.getElementById("profileNameInput");
+            const saveProfileButton = document.querySelector("#publicProfileTab .button-confirm");
+
+            const loadUserProfile = async (user) => {
+                try {
+                    const profileData = await getUserProfile(user.uid);
+                    if (profileData) {
+                        if (profileData.profilePicture) {
+                            profilePicturePreview.src = profileData.profilePicture;
+                        }
+                        if (profileData.username) {
+                            profileNameInput.value = profileData.username;
+                        }
+                    }
+                } catch (error) {
+                    console.error("Error loading user profile:", error);
+                }
+            };
+
+            const updateProfilePicturePreview = (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                        profilePicturePreview.src = reader.result;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            };
+
+            profilePictureInput.addEventListener("change", updateProfilePicturePreview);
+
+            saveProfileButton.addEventListener("click", async () => {
+                const user = auth.currentUser;
+                if (!user) {
+                    alert("Kein Benutzer angemeldet.");
+                    return;
+                }
+
+                const profilePicture = profilePicturePreview.src;
+                const username = profileNameInput.value.trim();
+
+                if (!username) {
+                    alert("Bitte einen Benutzernamen eingeben.");
+                    return;
+                }
+
+                try {
+                    await updateUserProfile(user.uid, { username, profilePicture });
+                    alert("Profil erfolgreich gespeichert!");
+                } catch (error) {
+                    console.error("Fehler beim Speichern des Profils:", error);
+                    alert("Fehler beim Speichern des Profils: " + error.message);
+                }
+            });
+
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    loadUserProfile(user);
+                } else {
+                    profilePicturePreview.src = "assets/profile-placeholder.png";
+                    profileNameInput.value = "";
+                }
+            });
+        });
+    </script>
 </head>
 <body>
     <header>
@@ -412,7 +487,7 @@
     <script type="module">
         // Import the functions you need from the SDKs you need
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-analytics.js";
+        import { getAnalytics, isSupported } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-analytics.js";
         // TODO: Add SDKs for Firebase products that you want to use
         // https://firebase.google.com/docs/web/setup#available-libraries
       

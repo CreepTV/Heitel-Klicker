@@ -5,8 +5,14 @@ import {
     onAuthStateChanged,
     signOut,
 } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+import {
+    getFirestore,
+    doc,
+    setDoc,
+    getDoc,
+    updateDoc,
+} from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
   // TODO: Add SDKs for Firebase products that you want to use
   // https://firebase.google.com/docs/web/setup#available-libraries
@@ -27,6 +33,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebas
   const app = initializeApp(firebaseConfig);
 
 const auth = getAuth();
+const db = getFirestore(app);
 const signUpForm = document.getElementById("signup-form");
 const signUpPopup = document.getElementById("signup-popup");
 const closePopupBtn = document.getElementById("close-popup-btn");
@@ -75,11 +82,16 @@ const loginUser = async (email, password) => {
     }
 };
 
-const registerUser = async (email, password) => {
+const registerUser = async (email, password, username, profilePicture) => {
     try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        console.log("User registered:", userCredential);
-        return userCredential.user;
+        const user = userCredential.user;
+
+        // Save user profile to Firestore
+        await saveUserProfile(user.uid, { username, profilePicture });
+
+        console.log("User registered and profile saved:", userCredential);
+        return user;
     } catch (error) {
         console.error("Error registering user:", error);
         throw error;
@@ -97,4 +109,43 @@ const logoutUser = async () => {
     }
 };
 
-export { registerUser, loginUser, logoutUser };
+const saveUserProfile = async (userId, profileData) => {
+    try {
+        const userDoc = doc(db, "users", userId);
+        await setDoc(userDoc, profileData, { merge: true });
+        console.log("User profile saved:", profileData);
+    } catch (error) {
+        console.error("Error saving user profile:", error);
+        throw error;
+    }
+};
+
+const updateUserProfile = async (userId, profileData) => {
+    try {
+        const userDoc = doc(db, "users", userId);
+        await setDoc(userDoc, profileData, { merge: true });
+        console.log("User profile updated:", profileData);
+    } catch (error) {
+        console.error("Error updating user profile:", error);
+        throw error;
+    }
+};
+
+const getUserProfile = async (userId) => {
+    try {
+        const userDoc = doc(db, "users", userId);
+        const userSnapshot = await getDoc(userDoc);
+        if (userSnapshot.exists()) {
+            console.log("User profile fetched:", userSnapshot.data());
+            return userSnapshot.data();
+        } else {
+            console.log("No user profile found.");
+            return null;
+        }
+    } catch (error) {
+        console.error("Error fetching user profile:", error);
+        throw error;
+    }
+};
+
+export { registerUser, loginUser, logoutUser, saveUserProfile, updateUserProfile, getUserProfile };
