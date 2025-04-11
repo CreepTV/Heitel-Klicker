@@ -46,6 +46,12 @@ const signUpBtn = document.getElementById("signup-btn");
 
 const profileNameInput = document.getElementById("profileNameInput");
 const saveProfileButton = document.getElementById("saveProfileButton");
+const profilePictureInput = document.getElementById("profilePictureInput");
+
+const devProfilePictureInput = document.getElementById("devProfilePictureInput");
+const devProfilePicturePreview = document.getElementById("devProfilePicturePreview");
+const devLoadProfileButton = document.getElementById("devLoadProfile");
+const devSaveProfileButton = document.getElementById("devSaveProfile");
 
 onAuthStateChanged(auth, (user) => {
     console.log("User state changed:", user);
@@ -55,6 +61,8 @@ onAuthStateChanged(auth, (user) => {
         loadProfileManagementPopup(user.uid); // Lade Benutzername und Profilbild für das Popup
     } else {
         console.log("No user is signed in.");
+        profilePicturePreview.src = "assets/profile-placeholder.png";
+        profileNameInput.value = "#Username#"; // Setze den Standardwert für den Benutzernamen
     }
 });
 
@@ -91,18 +99,11 @@ const loginUser = async (email, password) => {
 
 const registerUser = async (email, password, profilePicture) => {
     try {
-        // Überprüfe, ob die E-Mail bereits registriert ist
-        const existingUser = await signInWithEmailAndPassword(auth, email, password).catch(() => null);
-        if (existingUser) {
-            throw new Error("Diese E-Mail-Adresse ist bereits registriert.");
-        }
-
-        // Registriere den neuen Benutzer
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
 
         // Generiere einen zufälligen Benutzernamen
-        const randomNumber = Math.floor(Math.random() * (400 - 212 + 1)) + 212; // Zahl zwischen 212 und 400
+        const randomNumber = Math.floor(Math.random() * (400 - 212 + 1)) + 212;
         const username = `HeitelFan${randomNumber}`;
 
         // Speichere das Benutzerprofil in Firestore
@@ -188,7 +189,7 @@ async function loadUsername(userId) {
             if (data.username) {
                 profileNameInput.value = data.username;
                 const usernameElements = document.querySelectorAll(".username-display");
-                usernameElements.forEach(el => el.textContent = data.username); // Aktualisiere alle Elemente mit der Klasse
+                usernameElements.forEach(el => el.textContent = data.username); // Aktualisiere alle Anzeigen
             }
         } else {
             console.log("Kein Benutzername gefunden.");
@@ -203,30 +204,16 @@ async function loadProfileManagementPopup(userId) {
     try {
         const userProfile = await getUserProfile(userId);
         if (userProfile) {
-            const usernameDisplay = document.getElementById("currentUsername");
-            const profileNameInput = document.getElementById("profileNameInput");
             const profilePicturePreview = document.getElementById("profilePicturePreview");
 
-            if (userProfile.username && usernameDisplay) {
-                usernameDisplay.textContent = userProfile.username; // Zeige den Benutzernamen im Popup an
-            }
-            if (userProfile.username && profileNameInput) {
-                profileNameInput.value = userProfile.username; // Setze den Benutzernamen in das Eingabefeld
-            }
-
-            // Lade das Profilbild aus Firebase Storage
             if (userProfile.profilePicturePath) {
-                const profilePictureRef = ref(storage, userProfile.profilePicturePath);
-                const profilePictureURL = await getDownloadURL(profilePictureRef);
-                if (profilePicturePreview) {
-                    profilePicturePreview.src = profilePictureURL; // Zeige das Profilbild im Popup an
-                }
-            } else if (profilePicturePreview) {
-                profilePicturePreview.src = "assets/profile-placeholder.png"; // Fallback auf Platzhalterbild
+                profilePicturePreview.src = userProfile.profilePicturePath; // Lade das Bild von Imgur
+            } else {
+                profilePicturePreview.src = "assets/profile-placeholder.png"; // Fallback
             }
         }
     } catch (error) {
-        console.error("Fehler beim Laden des Profils für das Popup:", error);
+        console.error("Fehler beim Laden des Profils:", error);
     }
 }
 
@@ -249,37 +236,138 @@ saveProfileButton.addEventListener("click", async () => {
     showNotification('success', 'Benutzername erfolgreich gespeichert!');
 });
 
-async function uploadProfilePictureToGitHub(userId, file) {
-    const GITHUB_TOKEN = "DEIN_PERSONAL_ACCESS_TOKEN"; // Ersetze durch deinen GitHub PAT
-    const REPO_OWNER = "DEIN_GITHUB_USERNAME"; // Ersetze durch deinen GitHub-Benutzernamen
-    const REPO_NAME = "DEIN_REPOSITORY_NAME"; // Ersetze durch den Namen deines Repositories
-    const BRANCH = "main"; // Der Branch, auf dem die Datei gespeichert werden soll
-    const FILE_PATH = `profilePictures/${userId}/${file.name}`; // Pfad im Repository
+profilePictureInput.addEventListener("change", async (event) => {
+    const file = event.target.files[0];
+    if (!file) {
+        showNotification('warning', 'Bitte eine Datei auswählen.');
+        return;
+    }
 
-    const fileContent = await file.arrayBuffer();
-    const base64Content = btoa(String.fromCharCode(...new Uint8Array(fileContent)));
+    try {
+        const imageUrl = await uploadProfilePictureToImgur(file);
+        console.log("Bild erfolgreich hochgeladen:", imageUrl);
 
-    const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`;
+        // Aktualisiere die Vorschau
+        const profilePicturePreview = document.getElementById("profilePicturePreview");
+        profilePicturePreview.src = imageUrl;
+
+        // Speichere die URL in der Firebase-Datenbank
+        const userId = auth.currentUser?.uid;
+        if (userId) {
+            await updateUserProfile(userId, { profilePicturePath: imageUrl });
+        }
+
+        showNotification('success', 'Profilbild erfolgreich hochgeladen!');
+    } catch (error) {
+        console.error("Fehler beim Hochladen des Profilbilds:", error);
+        showNotification('error', 'Fehler beim Hochladen des Profilbilds.');
+    }
+});
+
+devProfilePictureInput.addEventListener("change", async (event) => {
+    const file = event.target.files[0];
+    if (!file) {
+        alert("Bitte eine Datei auswählen.");
+        return;
+    }
+
+    try {
+        const imageUrl = await uploadProfilePictureToImgur(file);
+        console.log("Test-Bild erfolgreich hochgeladen:", imageUrl);
+
+        // Aktualisiere die Vorschau im Development Menu
+        devProfilePicturePreview.src = imageUrl;
+
+        alert("Test-Bild erfolgreich hochgeladen!");
+    } catch (error) {
+        console.error("Fehler beim Hochladen des Test-Bildes:", error);
+        alert("Fehler beim Hochladen des Test-Bildes.");
+    }
+});
+
+devLoadProfileButton.addEventListener("click", async () => {
+    const testUserId = "testUser123"; // Beispiel-Benutzer-ID für Tests
+    try {
+        const userProfile = await getUserProfile(testUserId);
+        if (userProfile && userProfile.profilePicturePath) {
+            devProfilePicturePreview.src = userProfile.profilePicturePath;
+            alert("Test-Profil geladen!");
+        } else {
+            devProfilePicturePreview.src = "assets/profile-placeholder.png";
+            alert("Kein Test-Profil gefunden.");
+        }
+    } catch (error) {
+        console.error("Fehler beim Laden des Test-Profils:", error);
+        alert("Fehler beim Laden des Test-Profils.");
+    }
+});
+
+devSaveProfileButton.addEventListener("click", async () => {
+    const testUserId = "testUser123"; // Beispiel-Benutzer-ID für Tests
+    const testProfilePicturePath = devProfilePicturePreview.src;
+
+    try {
+        await updateUserProfile(testUserId, { profilePicturePath: testProfilePicturePath });
+        alert("Test-Profil erfolgreich gespeichert!");
+    } catch (error) {
+        console.error("Fehler beim Speichern des Test-Profils:", error);
+        alert("Fehler beim Speichern des Test-Profils.");
+    }
+});
+
+async function savePublicProfile() {
+    const profileName = document.getElementById('profileNameInput').value.trim();
+    const profilePicture = document.getElementById('profilePicturePreview').src;
+
+    if (!profileName) {
+        showNotification('warning', 'Bitte einen Benutzernamen eingeben.');
+        return;
+    }
+
+    const user = auth.currentUser;
+    if (!user) {
+        showNotification('error', 'Kein Benutzer angemeldet.');
+        return;
+    }
+
+    try {
+        await updateUserProfile(user.uid, { username: profileName, profilePicture });
+        showNotification('success', 'Dein öffentliches Profil wurde gespeichert!');
+        document.getElementById('currentUsername').textContent = profileName; // Aktualisiere die Anzeige
+        closePopup('profileManagementPopup');
+    } catch (error) {
+        console.error('Fehler beim Speichern des Profils:', error);
+        showNotification('error', 'Fehler beim Speichern des Profils.');
+    }
+}
+
+async function uploadProfilePictureToImgur(file) {
+    const CLIENT_ID = "9bf044fb8afeecf"; // Ersetze durch deine Imgur Client-ID
+    const url = "https://api.imgur.com/3/image";
+
+    const formData = new FormData();
+    formData.append("image", file);
 
     const response = await fetch(url, {
-        method: "PUT",
+        method: "POST",
         headers: {
-            Authorization: `Bearer ${GITHUB_TOKEN}`,
-            "Content-Type": "application/json",
+            Authorization: `Client-ID ${CLIENT_ID}`,
         },
-        body: JSON.stringify({
-            message: `Profilbild für Benutzer ${userId} hochgeladen`,
-            content: base64Content,
-            branch: BRANCH,
-        }),
+        body: formData,
     });
 
     if (!response.ok) {
-        throw new Error("Fehler beim Hochladen des Profilbilds auf GitHub");
+        throw new Error("Fehler beim Hochladen des Bildes auf Imgur");
     }
 
     const data = await response.json();
-    return data.content.download_url; // URL der hochgeladenen Datei
+    return data.data.link; // URL des hochgeladenen Bildes
 }
 
 export { registerUser, loginUser, logoutUser, saveUserProfile, updateUserProfile, getUserProfile };
+
+
+
+
+
+

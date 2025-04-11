@@ -350,36 +350,33 @@ footer {
 
 .dev-menu {
     position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background-color: #333;
-    color: white;
+    bottom: 10px;
+    right: 10px;
+    background-color: #f4f4f4;
     padding: 15px;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    z-index: 10000;
-    font-size: 14px;
-    text-align: center;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
 }
 
 .dev-menu h4 {
-    margin-bottom: 10px;
+    margin: 0 0 10px;
     font-size: 16px;
+    color: #333;
 }
 
+.dev-menu input,
 .dev-menu button {
-    background-color: #ff5555;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 5px;
-    cursor: pointer;
+    display: block;
+    margin: 5px 0;
+    padding: 5px;
     font-size: 14px;
-    transition: background-color 0.3s ease;
 }
 
-.dev-menu button:hover {
-    background-color: #ff0000;
+.dev-menu img {
+    display: block;
+    margin-top: 10px;
 }
 
 #autoClickerSymbols {

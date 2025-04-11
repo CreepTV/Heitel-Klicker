@@ -325,13 +325,6 @@ function removeProfilePicture() {
     }
 }
 
-function savePublicProfile() {
-    const profileName = document.getElementById('profileNameInput').value;
-    const profilePicture = document.getElementById('profilePicturePreview').src;
-    console.log('Profil gespeichert:', { profileName, profilePicture });
-    showNotification('success', 'Dein öffentliches Profil wurde gespeichert!');
-    closePopup('profileManagementPopup');
-}
 
 function saveAccountSettings() {
     const email = document.getElementById('emailInput').value;
