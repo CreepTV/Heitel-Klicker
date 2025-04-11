@@ -190,13 +190,6 @@
         });
     </script>
     <script type="module">
-        import { testFirebaseAPIs } from './script/firebase-config.js';
-
-        document.addEventListener('DOMContentLoaded', () => {
-            testFirebaseAPIs();
-        });
-    </script>
-    <script type="module">
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
         import { getUserProfile, updateUserProfile } from './script/firebase-config.js';
 
@@ -217,6 +210,7 @@
                         }
                         if (profileData.username) {
                             profileNameInput.value = profileData.username;
+                            document.getElementById("currentUsername").textContent = profileData.username;
                         }
                     }
                 } catch (error) {
@@ -292,7 +286,7 @@
                     <ul>
                         <li><button onclick="showProfile()">Profil</button></li>
                         <li><button onclick="toggleSettingsPopup()">Einstellungen</button></li>
-                        <li><button onclick="logoutUser()">Abmelden</button></li>
+                        <li>                    <button onclick="logoutUser()">Abmelden</button></li>
                     </ul>
                 </div>
             </div>
@@ -438,11 +432,14 @@
             <div id="publicProfileTab" class="tab-content active">
                 <h3>Öffentliches Profil</h3>
                 <div class="profile-section">
-                    <div class="profile-picture-preview" onclick="triggerProfilePictureInput()">
-                        <img id="profilePicturePreview" src="assets/profile-placeholder.png" alt="Profilbild Vorschau">
+                    <div class="profile-picture-preview">
+                        <img id="profilePicturePreview" src="assets/profile-placeholder.png" alt="Profilbild">
                     </div>
-                    <input type="file" id="profilePictureInput" accept="image/*" onchange="updateProfilePicturePreview(event)" style="display: none;">
-                    <button class="button-confirm" onclick="removeProfilePicture()">Profilbild entfernen</button>
+                </div>
+                <div class="profile-section">
+                    <p id="currentUsername" class="username-display">
+                        <!-- Der Benutzername wird hier dynamisch eingefügt -->
+                    </p>
                 </div>
                 <div class="profile-section">
                     <div class="input__container">

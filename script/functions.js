@@ -106,8 +106,9 @@ function buyItem(itemId) {
         updateItemCount('item1Count', autoClickers);
         updateAutoClickerPriceDisplay();
         updateShopTooltip(1, 1, autoClickers); // Update tooltip with income per item and total income
+        showNotification('success', 'Auto Klicker erfolgreich gekauft!');
     } else if (itemId === 1) {
-        alert('Nicht genug Heitels!');
+        showNotification('warning', 'Nicht genug Heitels!');
     }
 }
 
@@ -328,7 +329,7 @@ function savePublicProfile() {
     const profileName = document.getElementById('profileNameInput').value;
     const profilePicture = document.getElementById('profilePicturePreview').src;
     console.log('Profil gespeichert:', { profileName, profilePicture });
-    alert('Dein öffentliches Profil wurde gespeichert!');
+    showNotification('success', 'Dein öffentliches Profil wurde gespeichert!');
     closePopup('profileManagementPopup');
 }
 
@@ -336,7 +337,7 @@ function saveAccountSettings() {
     const email = document.getElementById('emailInput').value;
     const password = document.getElementById('passwordInput').value;
     console.log('Kontoeinstellungen gespeichert:', { email, password });
-    alert('Deine Kontoeinstellungen wurden gespeichert!');
+    showNotification('success', 'Deine Kontoeinstellungen wurden gespeichert!');
     closePopup('profileManagementPopup');
 }
 
