@@ -2,6 +2,8 @@
 let clickValue = 0; // Aktueller Heitel-Wert
 let autoClickers = 0; // Anzahl der Auto Klicker
 let autoClickerPrice = 10; // Initial price for auto-clickers
+let ciscoRouters = 0; // Anzahl der Cisco Router
+let ciscoRouterPrice = 50; // Initial price for Cisco Routers
 
 function updateHeitelValueBar() {
     const heitelValueElement = document.getElementById('heitelValue');
@@ -85,6 +87,13 @@ function updateAutoClickerPriceDisplay() {
     }
 }
 
+function updateCiscoRouterPriceDisplay() {
+    const priceElement = document.getElementById('kosten2');
+    if (priceElement) {
+        priceElement.innerText = `${ciscoRouterPrice} Heitels`;
+    }
+}
+
 function updateShopTooltip(itemId, incomePerItem, purchasedCount) {
     if (itemId === 1) {
         const incomePerItemElement = document.getElementById('item1IncomePerItem');
@@ -92,6 +101,14 @@ function updateShopTooltip(itemId, incomePerItem, purchasedCount) {
         const purchasedElement = document.getElementById('item1Purchased');
         if (incomePerItemElement) incomePerItemElement.innerText = incomePerItem;
         if (totalIncomeElement) totalIncomeElement.innerText = incomePerItem * purchasedCount;
+        if (purchasedElement) purchasedElement.innerText = purchasedCount;
+    }
+    if (itemId === 2) {
+        const incomePerItemElement = document.getElementById('item2IncomePerItem');
+        const totalIncomeElement = document.getElementById('item2TotalIncome');
+        const purchasedElement = document.getElementById('item2Purchased');
+        if (incomePerItemElement) incomePerItemElement.innerText = `${incomePerItem}%`;
+        if (totalIncomeElement) totalIncomeElement.innerText = `${(incomePerItem * purchasedCount).toFixed(2)}%`;
         if (purchasedElement) purchasedElement.innerText = purchasedCount;
     }
 }
@@ -108,11 +125,22 @@ function buyItem(itemId) {
         updateShopTooltip(1, 1, autoClickers); // Update tooltip with income per item and total income
     } else if (itemId === 1) {
         alert('Nicht genug Heitels!');
+    } else if (itemId === 2 && clickValue >= ciscoRouterPrice) {
+        clickValue -= ciscoRouterPrice;
+        ciscoRouters += 1;
+        ciscoRouterPrice = Math.ceil(ciscoRouterPrice * 1.25); // Increase price by 25%
+        updateHeitelValueBar();
+        updateItemCount('item2Count', ciscoRouters);
+        updateCiscoRouterPriceDisplay();
+        updateShopTooltip(2, 0.5, ciscoRouters); // Update tooltip with income per item and total income
+    } else if (itemId === 2) {
+        alert('Nicht genug Heitels!');
     }
 }
 
 function generateHeitels() {
-    clickValue += autoClickers;
+    const ciscoRouterBonus = clickValue * (ciscoRouters * 0.005); // 0.5% income per router
+    clickValue += autoClickers + ciscoRouterBonus;
     updateHeitelValueBar();
     saveGame();
 }
@@ -345,6 +373,8 @@ document.addEventListener('DOMContentLoaded', () => {
     updateAutoClickerSymbols();
     updateAutoClickerPriceDisplay();
     updateShopTooltip(1, 1, autoClickers); // Initialize tooltip on page load
+    updateCiscoRouterPriceDisplay();
+    updateShopTooltip(2, 0.5, ciscoRouters); // Initialize tooltip for Cisco Router
 
     const clickObject = document.getElementById('clickObject');
     if (clickObject) {

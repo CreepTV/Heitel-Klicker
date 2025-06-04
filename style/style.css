@@ -292,13 +292,28 @@ footer {
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
 }
 
-.shop-item-icon {
-    width: 40px; /* Set the icon size */
-    background-color: #ddd;
-    height: 40px;
+.shop-item-icon-frame {
+    background-color: white;
+    border: 2px solid #ccc;
+    border-radius: 8px;
     padding: 5px;
-    border-radius: 5px; /* Optional: Add rounded corners */
-    box-shadow: 0 2px 5px rgba(255, 167, 100, 0.1); /* Add a shadow for the icon */
+    width: 40px;
+    height: 40px;
+    display: inline-block;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    overflow: hidden; /* Ensure the icon fits within the frame */
+}
+
+.shop-item-icon {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+}
+
+.shop-item#item2 .shop-item-icon {
+    background-color: #ddd; /* Light blue for Cisco Router */
+    height: 40px;
+    width: 40px;
 }
 
 .itemcount{

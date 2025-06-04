@@ -317,7 +317,9 @@
             <h3>Shop</h3>
             <p>Hier kommen später die Kaufoptionen.</p>
             <div class="shop-item" id="item1" onclick="buyItem(1)" role="button" tabindex="0" aria-label="Auto Klicker kaufen">
-                <img src="assets/HeitelCursorNormal.ico" alt="Auto Klicker Icon" class="shop-item-icon">
+                <div class="shop-item-icon-frame">
+                    <img src="assets/HeitelCursorNormal.ico" alt="Auto Klicker Icon" class="shop-item-icon">
+                </div>
                 <div class="shop-item-info">
                     <div class="iteminfo-container">
                     <h4>Auto Klicker</h4>
@@ -338,6 +340,33 @@
                     <div class="tooltip-row">
                         <img src="assets\icons\multipleAutoclicker.png" alt="Gekauft" class="tooltip-icon">
                         <span id="item1Purchased">0</span> Stück
+                    </div>
+                </span>
+            </div>
+            <div class="shop-item" id="item2" onclick="buyItem(2)" role="button" tabindex="0" aria-label="Cisco Router kaufen">
+                <div class="shop-item-icon-frame">
+                    <img src="assets/icons/cisco-router-icon.png" alt="Cisco Router Icon" class="shop-item-icon">
+                </div>
+                <div class="shop-item-info">
+                    <div class="iteminfo-container">
+                        <h4>Cisco Router</h4>
+                        <p class="itemcount"><span id="item2Count">0</span></p>
+                    </div>
+                    <p id="kosten2">50 Heitels</p>
+                </div>
+                <span class="tooltip">
+                    <span class="itemDescription" id="item2Description">Ein Router, der dein Einkommen um 0,5% pro Sekunde erhöht.</span>
+                    <div class="tooltip-row">
+                        <img src="assets/icons/produktion_icon_alone.png" alt="Produktion pro Item" style="scale: 80%;" class="tooltip-icon">
+                        <span id="item2IncomePerItem">0.5%</span> Einkommen/sek
+                    </div>
+                    <div class="tooltip-row">
+                        <img src="assets/icons/produktion_icon_transparent.png" alt="Gesamtproduktion" class="tooltip-icon">
+                        <span id="item2TotalIncome">0%</span> Gesamteinkommen/sek
+                    </div>
+                    <div class="tooltip-row">
+                        <img src="assets/icons/multipleRouter.png" alt="Gekauft" class="tooltip-icon">
+                        <span id="item2Purchased">0</span> Stück
                     </div>
                 </span>
             </div>
