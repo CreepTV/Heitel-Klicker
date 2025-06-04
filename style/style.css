@@ -1208,8 +1208,6 @@ footer {
     font-size: 16px;
     font-weight: bold;
     cursor: pointer;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-    transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .button-confirm:hover {
@@ -1363,4 +1361,23 @@ footer {
     transform: translateZ(50px);
     z-index: 4;
     border: 2px solid #000;
+}
+
+@keyframes notification-pop {
+    0% {
+        transform: scale(0.85);
+        opacity: 0.5;
+    }
+    60% {
+        transform: scale(1.08);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.notification-pop {
+    animation: notification-pop 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }

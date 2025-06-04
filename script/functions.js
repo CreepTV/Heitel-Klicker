@@ -8,14 +8,17 @@ let ciscoRouterPrice = 50; // Initial price for Cisco Routers
 function updateHeitelValueBar() {
     const heitelValueElement = document.getElementById('heitelValue');
     if (heitelValueElement) {
-        heitelValueElement.innerText = clickValue;
+        heitelValueElement.innerText = Math.round(clickValue);
     }
 }
 
 function saveGame() {
     try {
-        localStorage.setItem('clickValue', clickValue);
+        localStorage.setItem('clickValue', Math.round(clickValue));
         localStorage.setItem('autoClickers', autoClickers);
+        localStorage.setItem('autoClickerPrice', autoClickerPrice);
+        localStorage.setItem('ciscoRouters', ciscoRouters);
+        localStorage.setItem('ciscoRouterPrice', ciscoRouterPrice);
     } catch (error) {
         console.error('Fehler beim Speichern des Spiels:', error);
     }
@@ -25,12 +28,22 @@ function loadGame() {
     try {
         const savedClickValue = localStorage.getItem('clickValue');
         const savedAutoClickers = localStorage.getItem('autoClickers');
+        const savedAutoClickerPrice = localStorage.getItem('autoClickerPrice');
+        const savedCiscoRouters = localStorage.getItem('ciscoRouters');
+        const savedCiscoRouterPrice = localStorage.getItem('ciscoRouterPrice');
 
-        clickValue = savedClickValue !== null ? parseInt(savedClickValue, 10) : 0;
+        clickValue = savedClickValue !== null ? Math.round(parseFloat(savedClickValue)) : 0;
         autoClickers = savedAutoClickers !== null ? parseInt(savedAutoClickers, 10) : 0;
+        autoClickerPrice = savedAutoClickerPrice !== null ? parseInt(savedAutoClickerPrice, 10) : 10;
+        ciscoRouters = savedCiscoRouters !== null ? parseInt(savedCiscoRouters, 10) : 0;
+        ciscoRouterPrice = savedCiscoRouterPrice !== null ? parseInt(savedCiscoRouterPrice, 10) : 50;
 
         updateHeitelValueBar();
         updateItemCount('item1Count', autoClickers);
+        updateAutoClickerPriceDisplay();
+        updateCiscoRouterPriceDisplay();
+        updateShopTooltip(1, 1, autoClickers);
+        updateShopTooltip(2, 0.5, ciscoRouters);
     } catch (error) {
         console.error('Fehler beim Laden des Spiels:', error);
     }
@@ -115,23 +128,37 @@ function updateShopTooltip(itemId, incomePerItem, purchasedCount) {
 
 function buyItem(itemId) {
     if (itemId === 1 && clickValue >= autoClickerPrice) {
-        clickValue -= autoClickerPrice;
+        clickValue = Math.round(clickValue - autoClickerPrice);
         autoClickers += 1;
-        autoClickerPrice = Math.ceil(autoClickerPrice * 1.20); // Increase price by 20%
+        autoClickerPrice = Math.ceil(autoClickerPrice * 1.20);
         updateHeitelValueBar();
         updateAutoClickerSymbols();
         updateItemCount('item1Count', autoClickers);
         updateAutoClickerPriceDisplay();
-        updateShopTooltip(1, 1, autoClickers); // Update tooltip with income per item and total income
+        updateShopTooltip(1, 1, autoClickers);
+        saveGame();
         showNotification('success', 'Auto Klicker erfolgreich gekauft!');
     } else if (itemId === 1) {
+        showNotification('warning', 'Nicht genug Heitels!');
+    }
+    if (itemId === 2 && clickValue >= ciscoRouterPrice) {
+        clickValue = Math.round(clickValue - ciscoRouterPrice);
+        ciscoRouters += 1;
+        ciscoRouterPrice = Math.ceil(ciscoRouterPrice * 1.20);
+        updateHeitelValueBar();
+        updateItemCount('item2Count', ciscoRouters);
+        updateCiscoRouterPriceDisplay();
+        updateShopTooltip(2, 0.5, ciscoRouters);
+        saveGame();
+        showNotification('success', 'Cisco Router erfolgreich gekauft!');
+    } else if (itemId === 2) {
         showNotification('warning', 'Nicht genug Heitels!');
     }
 }
 
 function generateHeitels() {
-    const ciscoRouterBonus = clickValue * (ciscoRouters * 0.005); // 0.5% income per router
-    clickValue += autoClickers + ciscoRouterBonus;
+    const ciscoRouterBonus = Math.round(clickValue * (ciscoRouters * 0.005));
+    clickValue = Math.round(clickValue + autoClickers + ciscoRouterBonus);
     updateHeitelValueBar();
     saveGame();
 }
@@ -142,7 +169,7 @@ function createFloatingText(value, x, y) {
 
     const text = document.createElement('div');
     text.className = 'floating-text';
-    text.innerText = `+${value}`;
+    text.innerText = `+${Math.round(value)}`;
     text.style.left = `${x}px`;
     text.style.top = `${y}px`;
 
@@ -228,8 +255,13 @@ function showNotification(type, message) {
     const notificationContainer = document.querySelector('.notification-container');
     if (!notificationContainer) return;
 
+    // Maximal 3 Notifications gleichzeitig anzeigen
+    while (notificationContainer.children.length >= 3) {
+        notificationContainer.removeChild(notificationContainer.firstChild);
+    }
+
     const notification = document.createElement('li');
-    notification.className = `notification-item ${type}`;
+    notification.className = `notification-item ${type} notification-pop`;
     notification.innerHTML = `
         <div class="notification-content">
             <div class="notification-icon">
@@ -252,6 +284,12 @@ function showNotification(type, message) {
     `;
 
     notificationContainer.appendChild(notification);
+
+    // Pop-Animation: Klasse nach kurzer Zeit wieder entfernen
+    setTimeout(() => {
+        notification.classList.remove('notification-pop');
+    }, 400);
+
     setupNotificationAutoClose(notification);
 }
 
